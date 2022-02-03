@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch SchemaService",
+            "request": "launch",
+            "mainClass": "tech.zeroreturn.microschema.configuration.SchemaService",
+            "projectName": "micro-schema"
+        },
+        {
+            "type": "java",
+            "name": "Binaryflux launch",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch MicroConfigApplication",
+            "request": "launch",
+            "mainClass": "tech.returnzero.microconfig.MicroConfigApplication",
+            "projectName": "micro-config"
+        },
+        {
+            "type": "java",
+            "name": "Launch MicroDataMongoApplication",
+            "request": "launch",
+            "mainClass": "tech.returnzero.microdatamongo.MicroDataMongoApplication",
+            "projectName": "micro-data-mongo"
+        },
+        {
+            "type": "java",
+            "name": "Launch MicroSchemaApplication",
+            "request": "launch",
+            "mainClass": "tech.zeroreturn.microschema.MicroSchemaApplication",
+            "projectName": "micro-schema"
+        }
+    ]
+}
