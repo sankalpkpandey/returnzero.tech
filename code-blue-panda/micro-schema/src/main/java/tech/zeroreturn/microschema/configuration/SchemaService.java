@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import tech.returnzero.microcontext.UserContext;
 import tech.returnzero.microexception.MicroException;
 import tech.zeroreturn.microschema.talker.MicroTalker;
 
@@ -32,7 +33,7 @@ public class SchemaService {
             String schematype = (String) schema.get("type");
             sinkmap.put(schematype, schema);
         }
-        
+
         talker.schema(sinkmap);
 
     }
@@ -306,8 +307,7 @@ public class SchemaService {
                         if (dynamicvalue.equals("$timestamp")) {
                             value = System.currentTimeMillis();
                         } else if (dynamicvalue.equals("$loggedinuser")) {
-                            // TODO need to get logged in user from context
-                            value = null;
+                            value = UserContext.get("username");
                         }
                     }
 
