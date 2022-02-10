@@ -39,3 +39,12 @@ CREATE TABLE order (
     PRIMARY KEY (id),
     unique (userid, status)
 );
+
+CREATE TABLE pricing (
+    productid bigint NOT NULL,
+    price double NOT NULL,
+    discountpercent double NOT NULL,
+    currency NOT NULL varchar(255),
+    coupencode NOT NULL varchar(255),
+    PRIMARY KEY (productid)
+);
