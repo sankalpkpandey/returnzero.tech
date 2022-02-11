@@ -66,7 +66,11 @@ public class DataBuilder {
             public void setValues(PreparedStatement ps) throws SQLException {
                 int i = 1;
                 for (Map.Entry<String, Object> entry : data.entrySet()) {
-                    ps.setObject(i++, entry.getValue());
+                    if (bcryptfields.contains(entry.getKey())) {
+                        ps.setObject(i++, BCrypt.hashpw((String) entry.getValue(), BCrypt.gensalt()));
+                    } else {
+                        ps.setObject(i++, entry.getValue());
+                    }
                     columns.add(entry.getKey() + " = ?");
                 }
 
@@ -120,6 +124,8 @@ public class DataBuilder {
 
         Integer offset = (Integer) dataobj.get("offset");
         Integer limit = (Integer) dataobj.get("limit");
+        String orderby = (String) dataobj.get("orderby");
+        String order = (String) dataobj.get("order");
 
         if (offset == null) {
             offset = 0;
@@ -140,8 +146,14 @@ public class DataBuilder {
             }
         };
 
+        String orderbyclause = "";
+
+        if (order != null && orderby != null) {
+            orderbyclause = " order by " + order + " " + order;
+        }
+
         String selectquery = "select " + StringUtils.collectionToCommaDelimitedString(columns) + " from " + entity
-                + " where " + prepareCondition(condition) + " limit " + limit
+                + " where " + prepareCondition(condition) + orderbyclause + " limit " + limit
                 + " offset " + offset;
         return jdbcTemplate.queryForList(selectquery, preparedStatementSetter);
     }

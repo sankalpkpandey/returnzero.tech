@@ -3,12 +3,11 @@ CREATE TABLE user (
     lastname NOT NULL varchar(255),
     firstname NOT NULL varchar(255),
     emailaddress NOT NULL varchar(255),
-    username NOT NULL varchar(255 UNIQUE),
+    username NOT NULL varchar(255),
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    unique (username),
-    unique (emailaddress),
+    unique (username, emailaddress),
     index(username, lastname, firstname, emailaddress)
 );
 
@@ -40,7 +39,7 @@ CREATE TABLE cart (
 );
 
 CREATE TABLE order (
-    id bigint NOT NULL AUTO_INCREMENT,
+    id BINARY(16) DEFAULT (uuid_to_bin(uuid())) NOT NULL,
     userid bigint NOT NULL,
     status NOT NULL varchar(255),
     outcome NOT NULL longtext,
@@ -62,3 +61,18 @@ CREATE TABLE pricing (
     PRIMARY KEY (productid),
     index(discountpercent, coupencode, price)
 );
+
+CREATE TABLE resetpasswordtoken (
+    token NOT NULL varchar(255),
+    emailaddress NOT NULL varchar(255),
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (token),
+    unique (emailaddress),
+    index(emailaddress)
+);
+
+CREATE EVENT deletepasswordtokens ON SCHEDULE EVERY 30 MINUTE COMMENT 'Clear out older tokens.' DO
+DELETE from
+    resetpasswordtoken
+WHERE
+    TIMESTAMPDIFF(MINUTE, createdon, NOW()) > 30;

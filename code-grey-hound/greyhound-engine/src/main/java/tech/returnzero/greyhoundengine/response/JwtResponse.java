@@ -1,4 +1,4 @@
-package tech.returnzero.greyhoundengine.security;
+package tech.returnzero.greyhoundengine.response;
 
 import java.util.List;
 

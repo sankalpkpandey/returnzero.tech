@@ -16,20 +16,35 @@ import tech.returnzero.greyhoundengine.database.DataBuilder;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
+
     @Autowired
     DataBuilder builder;
 
     @Override
     @Transactional
-    @SuppressWarnings("unchecked")
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        List<Map<String, Object>> user = null;
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Map<String, Object> user = getUser("username", username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User Not Found with username: " + username);
+        }
+        return UserDetailsImpl.build(user);
+    }
+
+    public UserDetails loadUserByEmailAddress(String emailaddress) throws UsernameNotFoundException {
+        Map<String, Object> user = getUser("emailaddress", emailaddress);
+        if (user == null) {
+            throw new UsernameNotFoundException("User Not Found with emailaddress: " + emailaddress);
+        }
+        return UserDetailsImpl.build(user);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getUser(String attrname, Object attrvalue) {
         try {
             Map<String, Object> dataobj = new HashMap<>();
-
             Map<String, Object> condition = new HashMap<>();
-            condition.put("username", new Object[] { "=", username });
+            condition.put(attrname, new Object[] { "=", attrvalue });
 
             dataobj.put("condition", condition);
             dataobj.put("limit", 1);
@@ -37,14 +52,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
             dataobj.put("columns", Arrays.asList(new String[] { "id", "username", "emailaddress", "password" }));
 
-            user = (List<Map<String, Object>>) builder.build(dataobj, "get", "user");
+            List<Map<String, Object>> user = (List<Map<String, Object>>) builder.build(dataobj, "get", "user");
+            if (user != null && !user.isEmpty()) {
+                return user.get(0);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if (user == null) {
-            throw new UsernameNotFoundException("User Not Found with username: " + username);
-        }
-        return UserDetailsImpl.build(user.get(0));
+        return null;
     }
+
 }
