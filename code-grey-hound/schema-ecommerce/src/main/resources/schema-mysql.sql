@@ -8,7 +8,8 @@ CREATE TABLE user (
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     unique (username),
-    unique (emailaddress)
+    unique (emailaddress),
+    index(username, lastname, firstname, emailaddress)
 );
 
 CREATE TABLE product (
@@ -25,7 +26,8 @@ CREATE TABLE product (
     imagefour varchar(255),
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    index(name, type)
 );
 
 CREATE TABLE cart (
@@ -45,7 +47,8 @@ CREATE TABLE order (
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    unique (userid, status)
+    unique (userid, status),
+    index(userid, status)
 );
 
 CREATE TABLE pricing (
@@ -56,5 +59,6 @@ CREATE TABLE pricing (
     coupencode NOT NULL varchar(255),
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (productid)
+    PRIMARY KEY (productid),
+    index(discountpercent, coupencode, price)
 );
