@@ -4,6 +4,8 @@ CREATE TABLE user (
     firstname NOT NULL varchar(255),
     emailaddress NOT NULL varchar(255),
     username NOT NULL varchar(255 UNIQUE),
+    updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     unique (username),
     unique (emailaddress)
@@ -21,6 +23,8 @@ CREATE TABLE product (
     imagetwo varchar(255),
     imagethree varchar(255),
     imagefour varchar(255),
+    updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 
@@ -28,6 +32,8 @@ CREATE TABLE cart (
     userid bigint NOT NULL,
     productid bigint NOT NULL,
     quantity int NOT NULL,
+    updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (userid, productid)
 );
 
@@ -36,6 +42,8 @@ CREATE TABLE order (
     userid bigint NOT NULL,
     status NOT NULL varchar(255),
     outcome NOT NULL longtext,
+    updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     unique (userid, status)
 );
@@ -46,5 +54,7 @@ CREATE TABLE pricing (
     discountpercent double NOT NULL,
     currency NOT NULL varchar(255),
     coupencode NOT NULL varchar(255),
+    updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (productid)
 );
