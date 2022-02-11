@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UserDetails loadUserByEmailAddress(String emailaddress) throws UsernameNotFoundException {
-        Map<String, Object> user = getUser("emailaddress", emailaddress);
+        Map<String, Object> user = getUser("email", emailaddress);
         if (user == null) {
             throw new UsernameNotFoundException("User Not Found with emailaddress: " + emailaddress);
         }
@@ -50,7 +50,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             dataobj.put("limit", 1);
             dataobj.put("offset", 0);
 
-            dataobj.put("columns", Arrays.asList(new String[] { "id", "username", "emailaddress", "password" }));
+            dataobj.put("columns", Arrays.asList(new String[] { "id", "username", "email", "password" }));
 
             List<Map<String, Object>> user = (List<Map<String, Object>>) builder.build(dataobj, "get", "user");
             if (user != null && !user.isEmpty()) {

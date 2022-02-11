@@ -1,33 +1,44 @@
+DROP TABLE IF EXISTS `user`;
+
 CREATE TABLE user (
-    id bigint NOT NULL AUTO_INCREMENT,
-    lastname NOT NULL varchar(255),
-    firstname NOT NULL varchar(255),
-    emailaddress NOT NULL varchar(255),
-    username NOT NULL varchar(255),
+    id bigint AUTO_INCREMENT NOT NULL,
+    lastname varchar(255) NOT NULL,
+    firstname varchar(255) NOT NULL,
+    email varchar(255) NOT NULL,
+    password varchar(255) NOT NULL,
+    username varchar(255) NOT NULL,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    unique (username, emailaddress),
-    index(username, lastname, firstname, emailaddress)
+    unique (username, email),
+    index(username),
+    index(lastname),
+    index(firstname),
+    index(email)
 );
 
+DROP TABLE IF EXISTS `product`;
+
 CREATE TABLE product (
-    id bigint NOT NULL AUTO_INCREMENT,
-    name NOT NULL varchar(255),
-    description NOT NULL longtext,
-    type NOT NULL varchar(255),
-    quantity NOT NULL varchar(255),
-    thumbnail NOT NULL varchar(255),
-    video NOT NULL varchar(255),
-    imageone NOT NULL varchar(255),
-    imagetwo varchar(255),
-    imagethree varchar(255),
-    imagefour varchar(255),
+    id bigint AUTO_INCREMENT NOT NULL,
+    sku varchar(255) NOT NULL,
+    details longtext NOT NULL,
+    category varchar(255) NOT NULL,
+    quantity varchar(255) NOT NULL,
+    thumbnail longtext NOT NULL,
+    video longtext NOT NULL,
+    imageone longtext NOT NULL,
+    imagetwo longtext,
+    imagethree longtext,
+    imagefour longtext,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    index(name, type)
+    index(sku),
+    index(category)
 );
+
+DROP TABLE IF EXISTS `cart`;
 
 CREATE TABLE cart (
     userid bigint NOT NULL,
@@ -38,38 +49,49 @@ CREATE TABLE cart (
     PRIMARY KEY (userid, productid)
 );
 
-CREATE TABLE order (
+DROP TABLE IF EXISTS `checkout`;
+
+CREATE TABLE checkout (
     id BINARY(16) DEFAULT (uuid_to_bin(uuid())) NOT NULL,
     userid bigint NOT NULL,
-    status NOT NULL varchar(255),
-    outcome NOT NULL longtext,
+    stage varchar(255) NOT NULL,
+    outcome longtext NOT NULL,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    unique (userid, status),
-    index(userid, status)
+    unique (userid, stage),
+    index(userid),
+    index(stage)
 );
+
+DROP TABLE IF EXISTS `pricing`;
 
 CREATE TABLE pricing (
     productid bigint NOT NULL,
     price double NOT NULL,
-    discountpercent double NOT NULL,
-    currency NOT NULL varchar(255),
-    coupencode NOT NULL varchar(255),
+    discount double NOT NULL,
+    currency varchar(255) NOT NULL,
+    coupencode varchar(255) NOT NULL,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (productid),
-    index(discountpercent, coupencode, price)
+    index(discount),
+    index(coupencode),
+    index(price)
 );
 
+DROP TABLE IF EXISTS `resetpasswordtoken`;
+
 CREATE TABLE resetpasswordtoken (
-    token NOT NULL varchar(255),
-    emailaddress NOT NULL varchar(255),
+    token varchar(255) NOT NULL,
+    email varchar(255) NOT NULL,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (token),
-    unique (emailaddress),
-    index(emailaddress)
+    unique (email),
+    index(email)
 );
+
+DROP EVENT IF EXISTS 'deletepasswordtokens';
 
 CREATE EVENT deletepasswordtokens ON SCHEDULE EVERY 30 MINUTE COMMENT 'Clear out older tokens.' DO
 DELETE from
@@ -77,12 +99,13 @@ DELETE from
 WHERE
     TIMESTAMPDIFF(MINUTE, createdon, NOW()) > 30;
 
+DROP TABLE IF EXISTS `configration`;
+
 CREATE TABLE configration (
-    name NOT NULL varchar(255),
-    json NOT NULL longtext,
+    identifier varchar(255) NOT NULL,
+    jsonconfig longtext NOT NULL,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (name),
-    unique (name),
-    index(name)
+    PRIMARY KEY (identifier),
+    unique (identifier)
 );

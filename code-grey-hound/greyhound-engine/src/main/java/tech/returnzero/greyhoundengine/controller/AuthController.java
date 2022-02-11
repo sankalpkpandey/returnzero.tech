@@ -86,7 +86,7 @@ public class AuthController {
 		if (userDetails != null) {
 
 			Map<String, Object> dataobj = new HashMap<>();
-			dataobj.put("emailaddress", emailaddress);
+			dataobj.put("email", emailaddress);
 			dataobj.put("token", token);
 
 			try {
@@ -123,7 +123,7 @@ public class AuthController {
 		dataobj.put("condition", condition);
 		dataobj.put("limit", 1);
 		dataobj.put("offset", 0);
-		dataobj.put("columns", Arrays.asList(new String[] { "token", "emailaddress" }));
+		dataobj.put("columns", Arrays.asList(new String[] { "token", "email" }));
 		try {
 
 			List<Map<String, Object>> tokens = (List<Map<String, Object>>) databuilder.build(dataobj, "get",
@@ -148,7 +148,7 @@ public class AuthController {
 					// now set the new password
 					dataobj = new HashMap<>();
 					condition = new HashMap<>();
-					condition.put("emailaddress", new Object[] { "=", emailaddress });
+					condition.put("email", new Object[] { "=", emailaddress });
 					Map<String, Object> data = new HashMap<>();
 					data.put("password", BCrypt.hashpw(changedpassword, BCrypt.gensalt()));
 					dataobj.put("condition", condition);
