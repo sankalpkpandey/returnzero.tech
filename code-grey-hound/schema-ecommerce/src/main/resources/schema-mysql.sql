@@ -76,3 +76,13 @@ DELETE from
     resetpasswordtoken
 WHERE
     TIMESTAMPDIFF(MINUTE, createdon, NOW()) > 30;
+
+CREATE TABLE configration (
+    name NOT NULL varchar(255),
+    json NOT NULL longtext,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (name),
+    unique (name),
+    index(name)
+);
