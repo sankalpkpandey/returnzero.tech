@@ -91,7 +91,7 @@ CREATE TABLE resetpasswordtoken (
     index(email)
 );
 
-DROP EVENT IF EXISTS 'deletepasswordtokens';
+DROP EVENT IF EXISTS deletepasswordtokens;
 
 CREATE EVENT deletepasswordtokens ON SCHEDULE EVERY 30 MINUTE COMMENT 'Clear out older tokens.' DO
 DELETE from
