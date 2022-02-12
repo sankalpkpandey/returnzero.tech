@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.returnzero.greyhoundengine.database.DataBuilder;
 import tech.returnzero.greyhoundengine.notification.EmailBuilder;
 import tech.returnzero.greyhoundengine.request.LoginRequest;
+import tech.returnzero.greyhoundengine.request.RequestData;
 import tech.returnzero.greyhoundengine.response.JwtResponse;
 import tech.returnzero.greyhoundengine.security.JwtUtils;
 import tech.returnzero.greyhoundengine.security.UserDetailsImpl;
@@ -54,6 +55,14 @@ public class AuthController {
 
 	@Autowired
 	private EmailBuilder emailbuilder;
+
+	@Autowired
+	private OperationController operations;
+
+	@PostMapping("/signup")
+	public ResponseEntity<?> signup(@RequestBody RequestData signup) {
+		return operations.work(signup);
+	}
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> signin(@RequestBody LoginRequest loginRequest) {

@@ -3,6 +3,8 @@ package tech.returnzero.greyhoundengine.database;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,11 +43,15 @@ public class DataBuilder {
                     } else {
                         ps.setObject(i++, entry.getValue());
                     }
-                    columns.add(entry.getKey());
-                    qmarks.add("?");
+
                 }
             }
         };
+
+        for (Map.Entry<String, Object> entry : dataobj.entrySet()) {
+            columns.add(entry.getKey());
+            qmarks.add("?");
+        }
 
         String insertsql = "insert into " + entity + "( " + StringUtils.collectionToCommaDelimitedString(columns)
                 + " )  values (" + StringUtils.collectionToCommaDelimitedString(qmarks) + ")";
@@ -71,15 +77,24 @@ public class DataBuilder {
                     } else {
                         ps.setObject(i++, entry.getValue());
                     }
-                    columns.add(entry.getKey() + " = ?");
+
                 }
 
                 for (Map.Entry<String, Object> entry : condition.entrySet()) {
-                    Object[] oprvaluearr = (Object[]) entry.getValue();
+                    Object[] oprvaluearr = null;
+                    if (Collection.class.isAssignableFrom(entry.getValue().getClass())) {
+                        oprvaluearr = ((List<Object>) entry.getValue()).toArray();
+                    } else {
+                        oprvaluearr = (Object[]) entry.getValue();
+                    }
                     ps.setObject(i++, oprvaluearr[1]);
                 }
             }
         };
+
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            columns.add(entry.getKey() + " = ?");
+        }
 
         String updatequery = "update " + entity + " set " + StringUtils.collectionToCommaDelimitedString(columns)
                 + " where " + prepareCondition(condition);
@@ -87,10 +102,17 @@ public class DataBuilder {
         return jdbcTemplate.update(updatequery, preparedStatementSetter);
     }
 
+    @SuppressWarnings("unchecked")
     private String prepareCondition(Map<String, Object> condition) {
         final List<String> qmarks = new ArrayList<>();
         for (Map.Entry<String, Object> entry : condition.entrySet()) {
-            Object[] oprvaluearr = (Object[]) entry.getValue();
+            Object[] oprvaluearr = null;
+
+            if (Collection.class.isAssignableFrom(entry.getValue().getClass())) {
+                oprvaluearr = ((List<Object>) entry.getValue()).toArray();
+            } else {
+                oprvaluearr = (Object[]) entry.getValue();
+            }
             qmarks.add(entry.getKey() + " " + (String) oprvaluearr[0] + " ?");
         }
         // [">=",3] , ["=", abc] , ["like", %b%]
@@ -106,7 +128,12 @@ public class DataBuilder {
             public void setValues(PreparedStatement ps) throws SQLException {
                 int i = 1;
                 for (Map.Entry<String, Object> entry : condition.entrySet()) {
-                    Object[] oprvaluearr = (Object[]) entry.getValue();
+                    Object[] oprvaluearr = null;
+                    if (Collection.class.isAssignableFrom(entry.getValue().getClass())) {
+                        oprvaluearr = ((List<Object>) entry.getValue()).toArray();
+                    } else {
+                        oprvaluearr = (Object[]) entry.getValue();
+                    }
                     ps.setObject(i++, oprvaluearr[1]);
                 }
             }
@@ -120,6 +147,10 @@ public class DataBuilder {
     public List<Map<String, Object>> get(Map<String, Object> dataobj, String entity) {
 
         Map<String, Object> condition = (Map<String, Object>) dataobj.get("condition");
+        if (condition == null) {
+            condition = new HashMap<>();
+        }
+
         List<String> columns = (List<String>) dataobj.get("columns");
 
         Integer offset = (Integer) dataobj.get("offset");
@@ -135,27 +166,35 @@ public class DataBuilder {
             limit = 10;
         }
 
-        PreparedStatementSetter preparedStatementSetter = new PreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps) throws SQLException {
-                int i = 1;
-                for (Map.Entry<String, Object> entry : condition.entrySet()) {
-                    Object[] oprvaluearr = (Object[]) entry.getValue();
-                    ps.setObject(i++, oprvaluearr[1]);
-                }
+        List<Object> argumets = new ArrayList<>();
+
+        for (Map.Entry<String, Object> entry : condition.entrySet()) {
+            Object[] oprvaluearr = null;
+            if (Collection.class.isAssignableFrom(entry.getValue().getClass())) {
+                oprvaluearr = ((List<Object>) entry.getValue()).toArray();
+            } else {
+                oprvaluearr = (Object[]) entry.getValue();
             }
-        };
+            argumets.add(oprvaluearr[1]);
+        }
 
         String orderbyclause = "";
 
         if (order != null && orderby != null) {
-            orderbyclause = " order by " + order + " " + order;
+            orderbyclause = " order by " + orderby + " " + order;
+        }
+        if (!condition.isEmpty()) {
+            String selectquery = "select " + StringUtils.collectionToCommaDelimitedString(columns) + " from " + entity
+                    + " where " + prepareCondition(condition) + orderbyclause + " limit " + limit
+                    + " offset " + offset;
+            return jdbcTemplate.queryForList(selectquery, argumets.toArray());
+        } else {
+            String selectquery = "select " + StringUtils.collectionToCommaDelimitedString(columns) + " from " + entity
+                    + orderbyclause + " limit " + limit
+                    + " offset " + offset;
+            return jdbcTemplate.queryForList(selectquery);
         }
 
-        String selectquery = "select " + StringUtils.collectionToCommaDelimitedString(columns) + " from " + entity
-                + " where " + prepareCondition(condition) + orderbyclause + " limit " + limit
-                + " offset " + offset;
-        return jdbcTemplate.queryForList(selectquery, preparedStatementSetter);
     }
 
 }
