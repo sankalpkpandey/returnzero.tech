@@ -139,7 +139,7 @@ public class AuthController {
 			if (tokens != null && !tokens.isEmpty()) {
 				Map<String, Object> tokenobj = tokens.get(0);
 				Long createdon = (Long) tokenobj.get("createdon");
-				String emailaddress = (String) tokenobj.get("createdon");
+				String emailaddress = (String) tokenobj.get("email");
 
 				long timelapsed = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - createdon);
 				if (timelapsed <= 30) {
