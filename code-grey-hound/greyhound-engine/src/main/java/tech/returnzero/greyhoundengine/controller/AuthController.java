@@ -15,7 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -159,7 +158,7 @@ public class AuthController {
 					condition = new HashMap<>();
 					condition.put("email", new Object[] { "=", emailaddress });
 					Map<String, Object> data = new HashMap<>();
-					data.put("password", BCrypt.hashpw(changedpassword, BCrypt.gensalt()));
+					data.put("password", changedpassword);
 					dataobj.put("condition", condition);
 					dataobj.put("data", data);
 					databuilder.build(dataobj, "update", "user");
