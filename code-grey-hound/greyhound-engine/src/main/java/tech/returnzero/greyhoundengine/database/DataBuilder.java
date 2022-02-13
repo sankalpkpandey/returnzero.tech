@@ -64,6 +64,7 @@ public class DataBuilder {
 
         Map<String, Object> data = (Map<String, Object>) dataobj.get("data");
         Map<String, Object> condition = (Map<String, Object>) dataobj.get("condition");
+        String constraint = (String) dataobj.get("constraint");
 
         final List<String> columns = new ArrayList<>();
 
@@ -97,13 +98,18 @@ public class DataBuilder {
         }
 
         String updatequery = "update " + entity + " set " + StringUtils.collectionToCommaDelimitedString(columns)
-                + " where " + prepareCondition(condition);
+                + " where " + prepareCondition(condition, constraint);
 
         return jdbcTemplate.update(updatequery, preparedStatementSetter);
     }
 
     @SuppressWarnings("unchecked")
-    private String prepareCondition(Map<String, Object> condition) {
+    private String prepareCondition(Map<String, Object> condition, String constraint) {
+
+        if (constraint == null) {
+            constraint = "and";
+        }
+
         final List<String> qmarks = new ArrayList<>();
         for (Map.Entry<String, Object> entry : condition.entrySet()) {
             Object[] oprvaluearr = null;
@@ -116,13 +122,15 @@ public class DataBuilder {
             qmarks.add(entry.getKey() + " " + (String) oprvaluearr[0] + " ?");
         }
         // [">=",3] , ["=", abc] , ["like", %b%]
-        return StringUtils.collectionToCommaDelimitedString(qmarks);
+        return StringUtils.collectionToDelimitedString(qmarks, ", " + constraint + " ");
 
     }
 
     @SuppressWarnings("unchecked")
     public Integer delete(Map<String, Object> dataobj, String entity) {
         Map<String, Object> condition = (Map<String, Object>) dataobj.get("condition");
+        String constraint = (String) dataobj.get("constraint");
+
         PreparedStatementSetter preparedStatementSetter = new PreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps) throws SQLException {
@@ -139,7 +147,7 @@ public class DataBuilder {
             }
         };
 
-        String deletequery = "delete from " + entity + " where " + prepareCondition(condition);
+        String deletequery = "delete from " + entity + " where " + prepareCondition(condition, constraint);
         return jdbcTemplate.update(deletequery, preparedStatementSetter);
     }
 
@@ -147,6 +155,8 @@ public class DataBuilder {
     public List<Map<String, Object>> get(Map<String, Object> dataobj, String entity) {
 
         Map<String, Object> condition = (Map<String, Object>) dataobj.get("condition");
+        String constraint = (String) dataobj.get("constraint");
+
         if (condition == null) {
             condition = new HashMap<>();
         }
@@ -185,7 +195,7 @@ public class DataBuilder {
         }
         if (!condition.isEmpty()) {
             String selectquery = "select " + StringUtils.collectionToCommaDelimitedString(columns) + " from " + entity
-                    + " where " + prepareCondition(condition) + orderbyclause + " limit " + limit
+                    + " where " + prepareCondition(condition, constraint) + orderbyclause + " limit " + limit
                     + " offset " + offset;
             return jdbcTemplate.queryForList(selectquery, argumets.toArray());
         } else {
