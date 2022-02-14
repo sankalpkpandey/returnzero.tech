@@ -1,0 +1,14 @@
+{
+    "test-rest": {
+        "url": "http://test.com",
+        "method": "POST",
+        "accept": "application/json",
+        "timeout": 5000,
+        "contenttype": "application/json",
+        "header": {
+            "X-Access-Token": "",
+            "Username": "",
+            "Password": ""
+        }
+    }
+}
