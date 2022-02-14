@@ -25,6 +25,28 @@ public class DataBuilder {
     @Value("#{'${bcrypt.fields}'.split(',')}")
     private List<String> bcryptfields;
 
+    @Value("#{'${sensitive.fields}'.split(',')}")
+    private List<String> sensitivefields;
+
+    private static final ThreadLocal<Boolean> BLOCKSENSITIVEFIELDS = new ThreadLocal<>();
+
+    public void blocksensitives() {
+        BLOCKSENSITIVEFIELDS.set(true);
+    }
+
+    public void unblocksesitives() {
+        BLOCKSENSITIVEFIELDS.remove();
+    }
+
+    public boolean issensitiveblocked() {
+
+        if (BLOCKSENSITIVEFIELDS.get() != null) {
+            return BLOCKSENSITIVEFIELDS.get();
+        } else {
+            return false;
+        }
+    }
+
     public Object build(Map<String, Object> dataobj, String operation, String entity) throws Exception {
         return DataBuilder.class.getMethod(operation, Map.class, String.class).invoke(this, dataobj, entity);
     }
@@ -193,6 +215,11 @@ public class DataBuilder {
         if (order != null && orderby != null) {
             orderbyclause = " order by " + orderby + " " + order;
         }
+
+        if (issensitiveblocked() && sensitivefields != null && !sensitivefields.isEmpty()) {
+            columns.removeAll(sensitivefields);
+        }
+
         if (!condition.isEmpty()) {
             String selectquery = "select " + StringUtils.collectionToCommaDelimitedString(columns) + " from " + entity
                     + " where " + prepareCondition(condition, constraint) + orderbyclause + " limit " + limit

@@ -28,6 +28,7 @@ public class OperationController {
         ResponseData response = new ResponseData();
         ResponseEntity<ResponseData> entity = null;
         try {
+            databuilder.blocksensitives();
             response.setResponse(
                     databuilder.build(requestbody.getRequest(), requestbody.getOperation(), requestbody.getEntity()));
             entity = ResponseEntity.ok(response);
@@ -35,6 +36,8 @@ public class OperationController {
             e.printStackTrace();
             response.setError(true);
             entity = new ResponseEntity<ResponseData>(response, HttpStatus.BAD_REQUEST);
+        } finally {
+            databuilder.unblocksesitives();
         }
         return entity;
     }
