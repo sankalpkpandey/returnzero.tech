@@ -45,7 +45,9 @@ CREATE TABLE product (
     index(sku),
     index(category),
     index(name),
-    index(subcategory)
+    index(subcategory),
+    unique (sku),
+    unique (name)
 );
 
 DROP TABLE IF EXISTS `cart`;
