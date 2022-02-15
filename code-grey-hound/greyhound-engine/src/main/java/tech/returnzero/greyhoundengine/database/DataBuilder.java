@@ -3,6 +3,7 @@ package tech.returnzero.greyhoundengine.database;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,13 +15,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import tech.returnzero.greyhoundengine.security.UserDetailsImpl;
-import tech.returnzero.greyhoundengine.security.UserDetailsServiceImpl;
 
 @Component
 public class DataBuilder {
@@ -38,9 +37,6 @@ public class DataBuilder {
     private Environment env;
 
     private static final ThreadLocal<Boolean> BLOCKSENSITIVEFIELDS = new ThreadLocal<>();
-
-    @Autowired
-    private UserDetailsServiceImpl userservice;
 
     public void blocksensitives() {
         BLOCKSENSITIVEFIELDS.set(true);
@@ -64,9 +60,7 @@ public class DataBuilder {
     }
 
     private UserDetailsImpl userdetails() {
-
-        UserDetails details = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        return (UserDetailsImpl) userservice.loadUserByUsername(details.getUsername());
+        return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     public Integer create(Map<String, Object> dataobj, String entity) {
@@ -211,7 +205,7 @@ public class DataBuilder {
 
         String deletequery = "delete from " + entity + " where " + prepareCondition(condition, constraint);
         return jdbcTemplate.update(deletequery, preparedStatementSetter);
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -273,6 +267,30 @@ public class DataBuilder {
             return jdbcTemplate.queryForList(selectquery);
         }
 
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getUser(String attrname, Object attrvalue) {
+        try {
+            Map<String, Object> dataobj = new HashMap<>();
+            Map<String, Object> condition = new HashMap<>();
+            condition.put(attrname, new Object[] { "=", attrvalue });
+
+            dataobj.put("condition", condition);
+            dataobj.put("limit", 1);
+            dataobj.put("offset", 0);
+
+            dataobj.put("columns", Arrays.asList(new String[] { "id", "username", "email", "password" }));
+
+            List<Map<String, Object>> user = (List<Map<String, Object>>) this.build(dataobj, "get", "user");
+            if (user != null && !user.isEmpty()) {
+                return user.get(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }
