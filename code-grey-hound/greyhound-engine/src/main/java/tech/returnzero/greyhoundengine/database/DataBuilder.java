@@ -144,7 +144,7 @@ public class DataBuilder {
             qmarks.add(entry.getKey() + " " + (String) oprvaluearr[0] + " ?");
         }
         // [">=",3] , ["=", abc] , ["like", %b%]
-        return StringUtils.collectionToDelimitedString(qmarks, ", " + constraint + " ");
+        return StringUtils.collectionToDelimitedString(qmarks, " " + constraint + " ");
 
     }
 
