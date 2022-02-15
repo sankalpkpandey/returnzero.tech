@@ -60,7 +60,7 @@ public class AuthController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(@RequestBody RequestData signup) {
-		return operations.work(signup);
+		return operations.work(signup, "create", "user");
 	}
 
 	@PostMapping("/signin")
