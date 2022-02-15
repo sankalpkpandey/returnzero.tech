@@ -33,9 +33,19 @@ CREATE TABLE product (
     imagefour longtext,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    name varchar(255) NOT NULL,
+    features longtext NOT NULL,
+    subcategory varchar(255) NOT NULL,
+    net_weight double NOT NULL,
+    gross_weight double NOT NULL,
+    length double NOT NULL,
+    width double NOT NULL,
+    height double NOT NULL,
     PRIMARY KEY (id),
     index(sku),
-    index(category)
+    index(category),
+    index(name),
+    index(subcategory)
 );
 
 DROP TABLE IF EXISTS `cart`;
