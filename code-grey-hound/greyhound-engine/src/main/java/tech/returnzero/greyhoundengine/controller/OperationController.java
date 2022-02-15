@@ -14,6 +14,7 @@ import tech.returnzero.greyhoundengine.notification.EmailBuilder;
 import tech.returnzero.greyhoundengine.request.RequestData;
 import tech.returnzero.greyhoundengine.response.ResponseData;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/operation")
 public class OperationController {

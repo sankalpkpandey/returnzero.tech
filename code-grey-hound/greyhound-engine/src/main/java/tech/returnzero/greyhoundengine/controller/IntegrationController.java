@@ -20,6 +20,7 @@ import tech.returnzero.greyhoundengine.request.IntegrationRequest;
 import tech.returnzero.greyhoundengine.response.ResponseData;
 import tech.returnzero.greyhoundengine.restclient.RestClient;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/integration")
 @Log4j2
