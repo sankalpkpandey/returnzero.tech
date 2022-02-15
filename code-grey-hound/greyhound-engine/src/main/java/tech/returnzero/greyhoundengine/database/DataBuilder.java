@@ -10,11 +10,17 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import tech.returnzero.greyhoundengine.security.UserDetailsImpl;
+import tech.returnzero.greyhoundengine.security.UserDetailsServiceImpl;
 
 @Component
 public class DataBuilder {
@@ -28,7 +34,13 @@ public class DataBuilder {
     @Value("#{'${sensitive.fields}'.split(',')}")
     private List<String> sensitivefields;
 
+    @Autowired
+    private Environment env;
+
     private static final ThreadLocal<Boolean> BLOCKSENSITIVEFIELDS = new ThreadLocal<>();
+
+    @Autowired
+    private UserDetailsServiceImpl userservice;
 
     public void blocksensitives() {
         BLOCKSENSITIVEFIELDS.set(true);
@@ -51,10 +63,23 @@ public class DataBuilder {
         return DataBuilder.class.getMethod(operation, Map.class, String.class).invoke(this, dataobj, entity);
     }
 
+    private UserDetailsImpl userdetails() {
+
+        UserDetails details = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        return (UserDetailsImpl) userservice.loadUserByUsername(details.getUsername());
+    }
+
     public Integer create(Map<String, Object> dataobj, String entity) {
 
         final List<String> columns = new ArrayList<>();
         final List<String> qmarks = new ArrayList<>();
+
+        String identitypropery = env.getProperty("security.context.id." + entity);
+
+        if (identitypropery != null) {
+            dataobj.put(identitypropery, userdetails().getId());
+        }
+
         PreparedStatementSetter preparedStatementSetter = new PreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps) throws SQLException {
@@ -67,6 +92,7 @@ public class DataBuilder {
                     }
 
                 }
+
             }
         };
 
@@ -87,6 +113,13 @@ public class DataBuilder {
         Map<String, Object> data = (Map<String, Object>) dataobj.get("data");
         Map<String, Object> condition = (Map<String, Object>) dataobj.get("condition");
         String constraint = (String) dataobj.get("constraint");
+
+        String identitypropery = env.getProperty("security.context.id." + entity);
+
+        if (identitypropery != null) {
+            condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
+            data.remove(identitypropery);
+        }
 
         final List<String> columns = new ArrayList<>();
 
@@ -150,8 +183,15 @@ public class DataBuilder {
 
     @SuppressWarnings("unchecked")
     public Integer delete(Map<String, Object> dataobj, String entity) {
+
         Map<String, Object> condition = (Map<String, Object>) dataobj.get("condition");
         String constraint = (String) dataobj.get("constraint");
+
+        String identitypropery = env.getProperty("security.context.id." + entity);
+
+        if (identitypropery != null) {
+            condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
+        }
 
         PreparedStatementSetter preparedStatementSetter = new PreparedStatementSetter() {
             @Override
@@ -171,6 +211,7 @@ public class DataBuilder {
 
         String deletequery = "delete from " + entity + " where " + prepareCondition(condition, constraint);
         return jdbcTemplate.update(deletequery, preparedStatementSetter);
+        
     }
 
     @SuppressWarnings("unchecked")
