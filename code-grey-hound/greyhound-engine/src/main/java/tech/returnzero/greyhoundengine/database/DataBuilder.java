@@ -137,7 +137,16 @@ public class DataBuilder {
                     } else {
                         oprvaluearr = (Object[]) entry.getValue();
                     }
-                    ps.setObject(i++, oprvaluearr[1]);
+
+                    if (Collection.class.isAssignableFrom(oprvaluearr[1].getClass())) {
+                        int size = ((List<Object>) oprvaluearr[1]).size();
+                        for (int j = 0; j < size; j++) {
+                            ps.setObject(i++, ((List<Object>) oprvaluearr[1]).get(j));
+                        }
+                    } else {
+                        ps.setObject(i++, oprvaluearr[1]);
+                    }
+
                 }
             }
         };
@@ -160,6 +169,7 @@ public class DataBuilder {
         }
 
         final List<String> qmarks = new ArrayList<>();
+
         for (Map.Entry<String, Object> entry : condition.entrySet()) {
             Object[] oprvaluearr = null;
 
@@ -168,7 +178,22 @@ public class DataBuilder {
             } else {
                 oprvaluearr = (Object[]) entry.getValue();
             }
-            qmarks.add(entry.getKey() + " " + (String) oprvaluearr[0] + " ?");
+
+            List<String> qmark = new ArrayList<>();
+            boolean inquery = false;
+
+            if (Collection.class.isAssignableFrom(oprvaluearr[1].getClass())) {
+                int size = ((List<Object>) oprvaluearr[1]).size();
+                inquery = true;
+                for (int i = 0; i < size; i++) {
+                    qmark.add(" ? ");
+                }
+            }
+
+            String delimiterqmark = inquery ? "( " + StringUtils.collectionToCommaDelimitedString(qmark) + " )" : " ? ";
+
+            qmarks.add(entry.getKey() + " " + (String) oprvaluearr[0]
+                    + delimiterqmark);
         }
         // [">=",3] , ["=", abc] , ["like", %b%]
         return StringUtils.collectionToDelimitedString(qmarks, " " + constraint + " ");
@@ -198,7 +223,14 @@ public class DataBuilder {
                     } else {
                         oprvaluearr = (Object[]) entry.getValue();
                     }
-                    ps.setObject(i++, oprvaluearr[1]);
+                    if (Collection.class.isAssignableFrom(oprvaluearr[1].getClass())) {
+                        int size = ((List<Object>) oprvaluearr[1]).size();
+                        for (int j = 0; j < size; j++) {
+                            ps.setObject(i++, ((List<Object>) oprvaluearr[1]).get(j));
+                        }
+                    } else {
+                        ps.setObject(i++, oprvaluearr[1]);
+                    }
                 }
             }
         };
@@ -242,7 +274,12 @@ public class DataBuilder {
             } else {
                 oprvaluearr = (Object[]) entry.getValue();
             }
-            argumets.add(oprvaluearr[1]);
+            if (Collection.class.isAssignableFrom(oprvaluearr[1].getClass())) {
+                argumets.addAll((List<Object>) oprvaluearr[1]);
+            } else {
+                argumets.add(oprvaluearr[1]);
+            }
+
         }
 
         String orderbyclause = "";
