@@ -30,7 +30,7 @@ public class RestClient {
 
     private Map<String, Object> body;
 
-    private Class<?> monotype;
+    private Class<?> monotype = Map.class;
 
     private RestClient() {
         // no impl
@@ -48,7 +48,7 @@ public class RestClient {
 
     public RestClient headers(Map<String, String> headers) {
         this.headers = new HttpHeaders();
-        headers.putAll(headers);
+        this.headers.setAll(headers);
         return this;
     }
 
