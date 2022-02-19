@@ -19,6 +19,7 @@ public class EmailBuilder {
     @Autowired
     private JavaMailSender emailSender;
 
+    @Autowired
     private FreeMarkerConfigurer freemarker;
 
     @SuppressWarnings("unchecked")

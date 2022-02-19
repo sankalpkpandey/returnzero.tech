@@ -63,7 +63,8 @@ public class IntegrationController {
         RestClient client = RestClient.build().accept((String) clientconfig.get("accept"))
                 .body(integration.getBody())
                 .contenttype((String) clientconfig.get("contenttype"))
-                .headers((Map<String, String>) clientconfig.get("headers")).url((String) clientconfig.get("url"));
+                .headers((Map<String, String>) clientconfig.get("headers")).url((String) clientconfig.get("url"))
+                .timeout((Integer) clientconfig.get("timeout"));
 
         try {
             response.setResponse(client.work());
