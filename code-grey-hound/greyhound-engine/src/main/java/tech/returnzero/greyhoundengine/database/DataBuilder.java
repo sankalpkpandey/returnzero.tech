@@ -115,10 +115,15 @@ public class DataBuilder {
         String constraint = (String) dataobj.get("constraint");
 
         String identitypropery = env.getProperty("security.context.id." + entity);
+        String autogenerateuuid = env.getProperty("autogenerate.uuid." + entity);
 
         if (identitypropery != null) {
             condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
             data.remove(identitypropery);
+        }
+
+        if (autogenerateuuid != null) {
+            data.remove(autogenerateuuid);
         }
 
         final List<String> columns = new ArrayList<>();
