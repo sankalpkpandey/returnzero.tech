@@ -77,7 +77,7 @@ public class RestClient {
 
     private Object post() throws Exception {
 
-        final var httpclient = HttpClient
+        final HttpClient httpclient = HttpClient
                 .create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout)
                 .doOnConnected(connection -> {

@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,9 @@ public class EmailBuilder {
     @Autowired
     private JavaMailSender emailSender;
 
+    @Value("${spring.mail.username}")
+    private String sentfrom;
+
     @Autowired
     private FreeMarkerConfigurer freemarker;
 
@@ -32,7 +36,13 @@ public class EmailBuilder {
         Template freemarkerTemplate = freemarker.getConfiguration()
                 .getTemplate((String) notifyMap.get("template"));
         String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, data);
-        helper.setFrom((String) notifyMap.get("from"));
+
+        if (notifyMap.get("from") != null) {
+            helper.setFrom((String) notifyMap.get("from"));
+        } else {
+            helper.setFrom(sentfrom);
+        }
+
         helper.setTo((String) notifyMap.get("to"));
         helper.setSubject((String) notifyMap.get("subject"));
         helper.setText(htmlBody, true);

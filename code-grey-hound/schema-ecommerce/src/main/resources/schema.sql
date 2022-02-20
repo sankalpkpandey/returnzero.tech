@@ -64,14 +64,13 @@ CREATE TABLE cart (
 DROP TABLE IF EXISTS `checkout`;
 
 CREATE TABLE checkout (
-    id BINARY(16) DEFAULT (uuid_to_bin(uuid())) NOT NULL,
+    id varchar(64) NOT NULL,
     userid bigint NOT NULL,
     stage varchar(255) NOT NULL,
     outcome longtext NOT NULL,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    unique (userid, stage),
     index(userid),
     index(stage)
 );

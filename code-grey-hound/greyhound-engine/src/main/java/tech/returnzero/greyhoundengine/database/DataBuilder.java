@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,9 +70,14 @@ public class DataBuilder {
         final List<String> qmarks = new ArrayList<>();
 
         String identitypropery = env.getProperty("security.context.id." + entity);
+        String autogenerateuuid = env.getProperty("autogenerate.uuid." + entity);
 
         if (identitypropery != null) {
             dataobj.put(identitypropery, userdetails().getId());
+        }
+
+        if (autogenerateuuid != null) {
+            dataobj.put(autogenerateuuid, UUID.randomUUID().toString());
         }
 
         PreparedStatementSetter preparedStatementSetter = new PreparedStatementSetter() {

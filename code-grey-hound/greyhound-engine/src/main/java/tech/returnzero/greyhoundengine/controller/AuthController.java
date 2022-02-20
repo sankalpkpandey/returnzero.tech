@@ -1,5 +1,6 @@
 package tech.returnzero.greyhoundengine.controller;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -131,17 +132,21 @@ public class AuthController {
 		dataobj.put("condition", condition);
 		dataobj.put("limit", 1);
 		dataobj.put("offset", 0);
-		dataobj.put("columns", Arrays.asList(new String[] { "token", "email" }));
+		dataobj.put("columns", Arrays.asList(new String[] { "token", "email", "createdon" }));
 		try {
 
 			List<Map<String, Object>> tokens = (List<Map<String, Object>>) databuilder.build(dataobj, "get",
 					"resetpasswordtoken");
 			if (tokens != null && !tokens.isEmpty()) {
 				Map<String, Object> tokenobj = tokens.get(0);
-				Long createdon = (Long) tokenobj.get("createdon");
+				Timestamp createdon = (Timestamp) tokenobj.get("createdon");
 				String emailaddress = (String) tokenobj.get("email");
 
-				long timelapsed = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - createdon);
+				long timelapsed = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - createdon.getTime());
+				if (timelapsed <= 30) {
+					validated = true;
+				}
+				
 				if (timelapsed <= 30) {
 					validated = true;
 				}
