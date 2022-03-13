@@ -1,13 +1,29 @@
 package tech.returnzero.microdatakafka.producer;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import java.util.Map;
 
-@Configuration
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
 @Profile("kafkaproducer")
 public class MicroKafkaProducer {
 
-    // need a generic producer .. this needs to know from where to pick data from
-    // and push data to which topic
+    @Autowired
+    private KafkaTemplate<String, Map<String, Object>> kafkaTemplate;
+
+    @Value("service.kafka.producer")
+    private String producertopic = null;
+
+    public void sendMessage(Map<String, Object> message) {
+        this.kafkaTemplate.send(producertopic, message);
+    }
+
+    public void sendMessage(String producertopic, Map<String, Object> message) {
+        this.kafkaTemplate.send(producertopic, message);
+    }
 
 }

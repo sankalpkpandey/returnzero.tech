@@ -1,107 +1,107 @@
 service:
-    data:
-        schemas:
-        -
-            type: dashboard
-            properties:
-                name:
-                    type: string
-                    hash: true
-                description:
-                    type: string
-                updatedon:
-                    type: long
-                createdon:
-                    type: long
-                createdby:
-                    type: string
-                updatedby:
-                    type: string
-            constraints:
-                unique: 
-                    - name
-                notnull:
-                    - name
-                    - description
-            rules:
-                name:
-                    length:
-                        min: 3
-                        max: 100
-                description:
-                    length:
-                        min: 5
-                        max: 250
-            defaults:
-                updatedon:
-                    value: $timestamp
-                    override: true
-                createdon:
-                    value: $timestamp
-                createdby:
-                    value: $loggedinuser
-                updatedby:
-                    value: $loggedinuser
-                    override: true
-            index:
+    cache: true
+    schemas:
+    -
+        type: dashboard
+        properties:
+            name:
+                type: string
+                hash: true
+            description:
+                type: string
+            updatedon:
+                type: long
+            createdon:
+                type: long
+            createdby:
+                type: string
+            updatedby:
+                type: string
+        constraints:
+            unique: 
                 - name
-        -
-            type: widget
-            properties:
-                dashboard:
-                    type: string
-                name:
-                    type: string
-                title:
-                    type: string
-                position: 
-                    type: string
-                updatedon:
-                    type: long
-                createdon:
-                    type: long
-                createdby:
-                    type: string
-                updatedby:
-                    type: string
-                template:
-                    type: string
-                script:
-                    type: string
-                callback:
-                    type: string
-            constraints:
-                unique: 
-                    - name
-                    - dashboard
-                notnull:
-                    - name
-                    - dashboard
-                    - title
-                    - position
-                    - template
-                    - script
-            rules:
-                name:
-                    length:
-                        min: 3
-                        max: 100
-                title:
-                    length:
-                        min: 5
-                        max: 150
-            defaults:
-                updatedon:
-                    value: $timestamp
-                    override: true
-                createdon:
-                    value: $timestamp
-                createdby:
-                    value: $loggedinuser
-                updatedby:
-                    value: $loggedinuser
-                    override: true
-
-            index:
+            notnull:
+                - name
+                - description
+        rules:
+            name:
+                length:
+                    min: 3
+                    max: 100
+            description:
+                length:
+                    min: 5
+                    max: 250
+        defaults:
+            updatedon:
+                value: $timestamp
+                override: true
+            createdon:
+                value: $timestamp
+            createdby:
+                value: $loggedinuser
+            updatedby:
+                value: $loggedinuser
+                override: true
+        index:
+            - name
+    -
+        type: widget
+        properties:
+            dashboard:
+                type: string
+            name:
+                type: string
+            title:
+                type: string
+            position: 
+                type: string
+            updatedon:
+                type: long
+            createdon:
+                type: long
+            createdby:
+                type: string
+            updatedby:
+                type: string
+            template:
+                type: string
+            script:
+                type: string
+            callback:
+                type: string
+        constraints:
+            unique: 
                 - name
                 - dashboard
+            notnull:
+                - name
+                - dashboard
+                - title
+                - position
+                - template
+                - script
+        rules:
+            name:
+                length:
+                    min: 3
+                    max: 100
+            title:
+                length:
+                    min: 5
+                    max: 150
+        defaults:
+            updatedon:
+                value: $timestamp
+                override: true
+            createdon:
+                value: $timestamp
+            createdby:
+                value: $loggedinuser
+            updatedby:
+                value: $loggedinuser
+                override: true
+
+        index:
+            - name
+            - dashboard

@@ -1,86 +1,86 @@
 service:
-    data:
-        schemas:
-        -
-            type: integration
-            properties:
-                name:
-                    type: string
-                    hash: true
-                description:
-                    type: string
-                template:
-                    type: string
-                updatedon:
-                    type: long
-                createdon:
-                    type: long
-                createdby:
-                    type: string
-                updatedby:
-                    type: string
-                masked:
-                    type: boolean
-                maskedattributes:
-                    type: array
-                    subtype: string
-                encrypted: 
-                    type: boolean
-                encryptedattributes:
-                    type: array
-                    subtype: string
-            constraints:
-                unique: 
-                    - name
-                notnull:
-                    - name
-                    - description
-                    - template
-                    - masked
-                    - encrypted
-            rules:
-                name:
-                    length:
-                        min: 3
-                        max: 100
-                description:
-                    length:
-                        min: 5
-                        max: 250
-            defaults:
-                updatedon:
-                    value: $timestamp
-                    override: true
-                createdon:
-                    value: $timestamp
-                createdby:
-                    value: $loggedinuser
-                updatedby:
-                    value: $loggedinuser
-                    override: true
-                masked:
-                    value: false
-                encrypted:
-                    value: false
-
-            index:
+    cache: true
+    schemas:
+    -
+        type: integration
+        properties:
+            name:
+                type: string
+                hash: true
+            description:
+                type: string
+            template:
+                type: string
+            updatedon:
+                type: long
+            createdon:
+                type: long
+            createdby:
+                type: string
+            updatedby:
+                type: string
+            masked:
+                type: boolean
+            maskedattributes:
+                type: array
+                subtype: string
+            encrypted: 
+                type: boolean
+            encryptedattributes:
+                type: array
+                subtype: string
+        constraints:
+            unique: 
                 - name
-                    
-        -
-            type: configuration
-            properties:
-                integration:
-                    type: string
-                    index: true
-                conifg:
-                    type: map
-            constraints:
-                unique: 
-                    - name
-                    - integration
-                notnull:
-                    - name
-                    - integration
-                    - conifg
-            index:
+            notnull:
+                - name
+                - description
+                - template
+                - masked
+                - encrypted
+        rules:
+            name:
+                length:
+                    min: 3
+                    max: 100
+            description:
+                length:
+                    min: 5
+                    max: 250
+        defaults:
+            updatedon:
+                value: $timestamp
+                override: true
+            createdon:
+                value: $timestamp
+            createdby:
+                value: $loggedinuser
+            updatedby:
+                value: $loggedinuser
+                override: true
+            masked:
+                value: false
+            encrypted:
+                value: false
+
+        index:
+            - name
+                
+    -
+        type: configuration
+        properties:
+            integration:
+                type: string
+                index: true
+            conifg:
+                type: map
+        constraints:
+            unique: 
+                - name
                 - integration
+            notnull:
+                - name
+                - integration
+                - conifg
+        index:
+            - integration

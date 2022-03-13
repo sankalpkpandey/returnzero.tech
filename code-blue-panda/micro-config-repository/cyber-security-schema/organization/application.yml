@@ -1,102 +1,102 @@
 service:
-    data:
-        schemas:
-        -
-            type: analyst
-            properties:
-                username:
-                    type: string
-                    hash: true
-                emailaddress:
-                    type: string
-                password:
-                    type: string
-                    encrypt: bcrypt
-                fullname:
-                    type: string
-                updatedon:
-                    type: long
-                createdon:
-                    type: long
-                createdby:
-                    type: string
-                updatedby:
-                    type: string
-                roles:
-                    type: array
-                    subtype: string
-            constraints:
-                unique: 
-                    - username
-                notnull:
-                    - fullname
-                    - emailaddress
-                    - password
-                    - roles
-            defaults:
-                updatedon:
-                    value: $timestamp
-                    override: true
-                createdon:
-                    value: $timestamp
-                createdby:
-                    value: $loggedinuser
-                updatedby:
-                    value: $loggedinuser
-                    override: true
-            rules:
-                emailaddress:
-                    regex: ^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$
-                username:
-                    length:
-                        min: 3
-                        max: 100
-
-            index:
+    cache: true
+    schemas:
+    -
+        type: analyst
+        properties:
+            username:
+                type: string
+                hash: true
+            emailaddress:
+                type: string
+            password:
+                type: string
+                encrypt: bcrypt
+            fullname:
+                type: string
+            updatedon:
+                type: long
+            createdon:
+                type: long
+            createdby:
+                type: string
+            updatedby:
+                type: string
+            roles:
+                type: array
+                subtype: string
+        constraints:
+            unique: 
                 - username
+            notnull:
+                - fullname
+                - emailaddress
+                - password
+                - roles
+        defaults:
+            updatedon:
+                value: $timestamp
+                override: true
+            createdon:
+                value: $timestamp
+            createdby:
+                value: $loggedinuser
+            updatedby:
+                value: $loggedinuser
+                override: true
+        rules:
+            emailaddress:
+                regex: ^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$
+            username:
+                length:
+                    min: 3
+                    max: 100
 
-        -
-            type: role
-            properties:
-                 name:
-                    type: string
-                    hash: true
-                 emaiaddress:
-                    type: string
-                 modules:
-                    type: map
-                 admin:
-                    type: boolean
-                 updatedon:
-                    type: long
-                 createdon:
-                    type: long
-                 createdby:
-                    type: string
-                 updatedby:
-                    type: string
-            constraints:
-                unique: 
-                    - name
-                notnull:
-                    - name
-                    - emailaddress
-                    - admin
-            defaults:
-                updatedon:
-                    value: $timestamp
-                    override: true
-                createdon:
-                    value: $timestamp
-                createdby:
-                    value: $loggedinuser
-                updatedby:
-                    value: $loggedinuser
-                    override: true
+        index:
+            - username
+
+    -
+        type: role
+        properties:
+                name:
+                type: string
+                hash: true
+                emaiaddress:
+                type: string
+                modules:
+                type: map
                 admin:
-                    value: false
-            rules:
-                emailaddress:
-                    regex: ^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$
-            index:
+                type: boolean
+                updatedon:
+                type: long
+                createdon:
+                type: long
+                createdby:
+                type: string
+                updatedby:
+                type: string
+        constraints:
+            unique: 
                 - name
+            notnull:
+                - name
+                - emailaddress
+                - admin
+        defaults:
+            updatedon:
+                value: $timestamp
+                override: true
+            createdon:
+                value: $timestamp
+            createdby:
+                value: $loggedinuser
+            updatedby:
+                value: $loggedinuser
+                override: true
+            admin:
+                value: false
+        rules:
+            emailaddress:
+                regex: ^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$
+        index:
+            - name
