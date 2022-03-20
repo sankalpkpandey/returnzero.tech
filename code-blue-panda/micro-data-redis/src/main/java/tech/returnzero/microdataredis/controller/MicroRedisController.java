@@ -1,4 +1,4 @@
-package tech.returnzero.microdatajdbc.controller;
+package tech.returnzero.microdataredis.controller;
 
 import java.util.Map;
 
@@ -8,18 +8,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tech.returnzero.microdatainterface.MicroDataControllerInterface;
-import tech.returnzero.microdatajdbc.talker.JDBCTalker;
+import tech.returnzero.microdataredis.talker.RedisTalker;
 import tech.returnzero.microexception.MicroException;
 
-@RestController("/data/jdbc")
-public class MicroJDBController implements MicroDataControllerInterface {
+@RestController("/data/redis")
+public class MicroRedisController implements MicroDataControllerInterface {
 
     @Autowired
-    private JDBCTalker talker;
+    private RedisTalker talker;
 
     @Override
     @PostMapping
-    public ResponseEntity<Object> operation(Map<String, Object> request) throws MicroException {
+    public ResponseEntity<Object> operation(Map<String, Object> request) throws MicroException {   
         return this.databasesink(request, talker);
     }
 
