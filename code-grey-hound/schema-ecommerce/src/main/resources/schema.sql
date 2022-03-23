@@ -189,3 +189,27 @@ CREATE TRIGGER reviewsummarytrigger_ratings AFTER INSERT ON ratings
             reviewcount = (select count(review)   from reviews  re where re.productid = NEW.productid  group by re.productid); 
        END//
 delimiter ;
+
+
+DROP TABLE IF EXISTS `address`;
+CREATE TABLE address (
+    id bigint AUTO_INCREMENT NOT NULL,
+    userid bigint NOT NULL,
+    type varchar(255) NOT NULL,
+    lineone varchar(255) NOT NULL,
+    linetwo varchar(255) NOT NULL,
+    city varchar(255) NOT NULL,
+    state varchar(255) NOT NULL,
+    countrycode varchar(255) NOT NULL,
+    pincode varchar(255) NOT NULL,
+    landmark varchar(255) NOT NULL,
+    updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    index(city),
+    index(state),
+    index(pincode),
+    index(countrycode),
+    index(userid),
+    unique (userid, type)
+);
