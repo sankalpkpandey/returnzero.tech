@@ -128,7 +128,8 @@ CREATE TABLE ratings (
     productid bigint NOT NULL,
     rating double NOT NULL DEFAULT 0.0,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (userid, productid)
+    PRIMARY KEY (userid, productid),
+    index(rating)
 );
 
 DROP TABLE IF EXISTS `reviews`;
@@ -148,7 +149,9 @@ CREATE TABLE reviewsummary (
     reviewcount int ,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (productid)
+    PRIMARY KEY (productid),
+    index(reviewcount),
+    index(avgrating)
 );
 
 
