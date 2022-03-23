@@ -120,3 +120,69 @@ CREATE TABLE configration (
     PRIMARY KEY (identifier),
     unique (identifier)
 );
+
+DROP TABLE IF EXISTS `ratings`;
+
+CREATE TABLE ratings (
+    userid bigint NOT NULL,
+    productid bigint NOT NULL,
+    rating double NOT NULL DEFAULT 0.0,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (userid, productid)
+);
+
+DROP TABLE IF EXISTS `reviews`;
+
+CREATE TABLE reviews (
+    userid bigint NOT NULL,
+    productid bigint NOT NULL,
+    review text NOT NULL,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (userid, productid)
+);
+
+DROP TABLE IF EXISTS `reviewsummary`;
+CREATE TABLE reviewsummary (
+    productid bigint NOT NULL,
+    avgrating double  ,
+    reviewcount int ,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (productid)
+);
+
+
+
+DROP TRIGGER IF EXISTS reviewsummarytrigger_reviews;
+delimiter //
+CREATE TRIGGER reviewsummarytrigger_reviews AFTER INSERT ON reviews
+       FOR EACH ROW
+       BEGIN
+         insert into reviewsummary values 
+         	(NEW.productid ,
+         	(select avg(rating) from ratings r where r.productid = NEW.productid group by r.productid),
+         	(select count(review)   from reviews re  where re.productid = NEW.productid  group by re.productid ),
+         	CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) 
+         	ON DUPLICATE KEY
+         	UPDATE 
+         	avgrating = (select avg(rating) from ratings r where r.productid = NEW.productid group by r.productid) ,
+            reviewcount = (select count(review)   from reviews  re where re.productid = NEW.productid  group by re.productid); 
+       END//
+delimiter ;
+      
+DROP TRIGGER IF EXISTS reviewsummarytrigger_ratings;
+delimiter //
+CREATE TRIGGER reviewsummarytrigger_ratings AFTER INSERT ON ratings
+       FOR EACH ROW
+       BEGIN
+         insert into reviewsummary values 
+         	(NEW.productid ,
+         	(select avg(rating) from ratings r where r.productid = NEW.productid group by r.productid),
+         	(select count(review)   from reviews re  where re.productid = NEW.productid  group by re.productid ),
+         	CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) 
+         	ON DUPLICATE KEY
+         	UPDATE 
+         	avgrating = (select avg(rating) from ratings r where r.productid = NEW.productid group by r.productid) ,
+            reviewcount = (select count(review)   from reviews  re where re.productid = NEW.productid  group by re.productid); 
+       END//
+delimiter ;
