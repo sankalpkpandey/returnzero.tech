@@ -24,31 +24,28 @@ CREATE TABLE product (
     sku varchar(255) NOT NULL,
     details longtext NOT NULL,
     category varchar(255) NOT NULL,
-    quantity varchar(255) NOT NULL,
     thumbnail longtext NOT NULL,
     video longtext NOT NULL,
     imageone longtext NOT NULL,
     imagetwo longtext,
     imagethree longtext,
     imagefour longtext,
+    featured boolean,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
     features longtext NOT NULL,
     subcategory varchar(255) NOT NULL,
-    net_weight double NOT NULL,
-    gross_weight double NOT NULL,
-    length double NOT NULL,
-    width double NOT NULL,
-    height double NOT NULL,
     PRIMARY KEY (id),
     index(sku),
     index(category),
     index(name),
+    index(featured),
     index(subcategory),
     unique (sku),
     unique (name)
 );
+
 
 DROP TABLE IF EXISTS `cart`;
 
@@ -137,9 +134,12 @@ DROP TABLE IF EXISTS `reviews`;
 CREATE TABLE reviews (
     userid bigint NOT NULL,
     productid bigint NOT NULL,
+    title varchar(255) NOT NULL,
+    location varchar(255) NOT NULL,
     review text NOT NULL,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (userid, productid)
+    PRIMARY KEY (userid, productid),
+    index(title)
 );
 
 DROP TABLE IF EXISTS `reviewsummary`;
@@ -193,9 +193,12 @@ delimiter ;
 
 DROP TABLE IF EXISTS `address`;
 CREATE TABLE address (
+
     id bigint AUTO_INCREMENT NOT NULL,
     userid bigint NOT NULL,
+    defaultaddress boolean,
     type varchar(255) NOT NULL,
+    person varchar(255) NOT NULL,
     lineone varchar(255) NOT NULL,
     linetwo varchar(255) NOT NULL,
     city varchar(255) NOT NULL,
@@ -207,9 +210,32 @@ CREATE TABLE address (
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     index(city),
+    index(defaultaddress),
     index(state),
     index(pincode),
     index(countrycode),
+    index(person),
     index(userid),
     unique (userid, type)
+    
+);
+
+DROP TABLE IF EXISTS `productoptions`;
+CREATE TABLE productoptions (
+    id bigint AUTO_INCREMENT NOT NULL,
+    productid bigint NOT NULL,
+    quantity varchar(255) NOT NULL,
+    net_weight double NOT NULL,
+    gross_weight double NOT NULL,
+    length double NOT NULL,
+    width double NOT NULL,
+    height double NOT NULL,
+    PRIMARY KEY (id),
+    unique (productid,quantity,net_weight,gross_weight,length,width,height),
+    index(quantity),
+    index(net_weight),
+    index(gross_weight),
+    index(length),
+    index(width),
+    index(height)
 );
