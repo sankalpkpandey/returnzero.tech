@@ -42,11 +42,11 @@ DROP TABLE IF EXISTS `cart`;
 
 CREATE TABLE cart (
     userid bigint NOT NULL,
-    productid bigint NOT NULL,
+    productoptionid bigint NOT NULL,
     quantity int NOT NULL,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (userid, productid)
+    PRIMARY KEY (userid, productoptionid)
 );
 
 DROP TABLE IF EXISTS `checkout`;
@@ -66,7 +66,7 @@ CREATE TABLE checkout (
 DROP TABLE IF EXISTS `pricing`;
 
 CREATE TABLE pricing (
-    sku varchar(255) NOT NULL,
+    productoptionid  bigint NOT NULL,
     productid bigint NOT NULL,
     price double NOT NULL,
     discount double NOT NULL,
@@ -74,11 +74,11 @@ CREATE TABLE pricing (
     coupencode varchar(255) NOT NULL,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (productid),
+    PRIMARY KEY (productoptionid),
     index(discount),
     index(coupencode),
     index(price),
-    index(sku)
+    index(productoptionid)
 );
 
 DROP TABLE IF EXISTS `resetpasswordtoken`;
@@ -186,7 +186,6 @@ delimiter ;
 
 DROP TABLE IF EXISTS `address`;
 CREATE TABLE address (
-
     id bigint AUTO_INCREMENT NOT NULL,
     userid bigint NOT NULL,
     defaultaddress boolean,
@@ -217,20 +216,20 @@ DROP TABLE IF EXISTS `productoptions`;
 CREATE TABLE productoptions (
     id bigint AUTO_INCREMENT NOT NULL,
     productid bigint NOT NULL,
-    `sku` varchar(255) NOT NULL,
+    sku varchar(255) NOT NULL,
     quantity varchar(255) NOT NULL,
     net_weight double NOT NULL,
     gross_weight double NOT NULL,
     length double NOT NULL,
     width double NOT NULL,
     height double NOT NULL,
-    `thumbnail` longtext NOT NULL,
-    `imageone` longtext NOT NULL,
-    `imagetwo` longtext,
-    `imagethree` longtext,
-    `imagefour` longtext,
+    thumbnail longtext NOT NULL,
+    imageone longtext NOT NULL,
+    imagetwo longtext,
+    imagethree longtext,
+    imagefour longtext,
     PRIMARY KEY (id),
-    KEY `sku` (`sku`),
+    index(`sku`),
     unique (productid,quantity,net_weight,gross_weight,length,width,height),
     unique (sku),
     index(quantity),
@@ -239,4 +238,14 @@ CREATE TABLE productoptions (
     index(length),
     index(width),
     index(height)
+);
+
+
+DROP TABLE IF EXISTS `websitelinks`;
+CREATE TABLE websitelinks (
+    linkname varchar(255) NOT NULL,
+    linkaddress text NOT NULL,
+    updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (linkname)
 );
