@@ -21,15 +21,8 @@ DROP TABLE IF EXISTS `product`;
 
 CREATE TABLE product (
     id bigint AUTO_INCREMENT NOT NULL,
-    sku varchar(255) NOT NULL,
     details longtext NOT NULL,
     category varchar(255) NOT NULL,
-    thumbnail longtext NOT NULL,
-    video longtext NOT NULL,
-    imageone longtext NOT NULL,
-    imagetwo longtext,
-    imagethree longtext,
-    imagefour longtext,
     featured boolean,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -37,12 +30,10 @@ CREATE TABLE product (
     features longtext NOT NULL,
     subcategory varchar(255) NOT NULL,
     PRIMARY KEY (id),
-    index(sku),
     index(category),
     index(name),
     index(featured),
     index(subcategory),
-    unique (sku),
     unique (name)
 );
 
@@ -75,6 +66,7 @@ CREATE TABLE checkout (
 DROP TABLE IF EXISTS `pricing`;
 
 CREATE TABLE pricing (
+    sku varchar(255) NOT NULL,
     productid bigint NOT NULL,
     price double NOT NULL,
     discount double NOT NULL,
@@ -85,7 +77,8 @@ CREATE TABLE pricing (
     PRIMARY KEY (productid),
     index(discount),
     index(coupencode),
-    index(price)
+    index(price),
+    index(sku)
 );
 
 DROP TABLE IF EXISTS `resetpasswordtoken`;
@@ -224,14 +217,22 @@ DROP TABLE IF EXISTS `productoptions`;
 CREATE TABLE productoptions (
     id bigint AUTO_INCREMENT NOT NULL,
     productid bigint NOT NULL,
+    `sku` varchar(255) NOT NULL,
     quantity varchar(255) NOT NULL,
     net_weight double NOT NULL,
     gross_weight double NOT NULL,
     length double NOT NULL,
     width double NOT NULL,
     height double NOT NULL,
+    `thumbnail` longtext NOT NULL,
+    `imageone` longtext NOT NULL,
+    `imagetwo` longtext,
+    `imagethree` longtext,
+    `imagefour` longtext,
     PRIMARY KEY (id),
+    KEY `sku` (`sku`),
     unique (productid,quantity,net_weight,gross_weight,length,width,height),
+    unique (sku),
     index(quantity),
     index(net_weight),
     index(gross_weight),
