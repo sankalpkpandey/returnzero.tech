@@ -299,6 +299,10 @@ public class DataBuilder {
                 joincolumn += " and ";
             }
 
+        } else {
+            if (!condition.isEmpty()) {
+                joincolumn += " where ";
+            }
         }
 
         if (offset == null) {
