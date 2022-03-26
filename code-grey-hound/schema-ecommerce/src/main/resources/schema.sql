@@ -28,7 +28,7 @@ CREATE TABLE product (
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
     features longtext NOT NULL,
-    subcategory varchar(255) NOT NULL,
+    subcategory varchar(255),
     PRIMARY KEY (id),
     index(category),
     index(name),
@@ -54,6 +54,7 @@ DROP TABLE IF EXISTS `checkout`;
 CREATE TABLE checkout (
     id varchar(64) NOT NULL,
     userid bigint NOT NULL,
+    guestemail varchar(255) ,
     stage varchar(255) NOT NULL,
     outcome longtext NOT NULL,
     updatedon TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -78,6 +79,7 @@ CREATE TABLE pricing (
     index(discount),
     index(coupencode),
     index(price),
+    index(productid),
     index(productoptionid)
 );
 
@@ -255,9 +257,9 @@ delimiter //
 CREATE TRIGGER productinserttoreview AFTER INSERT ON product
        FOR EACH ROW
        BEGIN
-         insert into reviewsummary values (NEW.id , 0.0, 0, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) 
+         insert into reviewsummary values (NEW.id  , 0.0, 0, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) 
          	ON DUPLICATE KEY
-         	UPDATE id=id;
+         	UPDATE productid=productid;
        END//
 delimiter ;
 
