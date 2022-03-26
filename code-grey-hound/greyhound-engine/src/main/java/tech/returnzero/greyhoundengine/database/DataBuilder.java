@@ -276,7 +276,7 @@ public class DataBuilder {
         String orderby = (String) dataobj.get("orderby");
         String order = (String) dataobj.get("order");
 
-        List<Map<String, String>> references = (List<Map<String, String>>) dataobj.get("reference");
+        List<Map<String, String>> references = (List<Map<String, String>>) dataobj.get("references");
 
         String joinentity = "";
         String joincolumn = "";
