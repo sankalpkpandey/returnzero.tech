@@ -172,11 +172,19 @@ public class DataBuilder {
         return jdbcTemplate.update(updatequery, preparedStatementSetter);
     }
 
-    @SuppressWarnings("unchecked")
     private String prepareCondition(Map<String, Object> condition, String constraint) {
+        return this.prepareCondition(condition, constraint, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    private String prepareCondition(Map<String, Object> condition, String constraint, String alias) {
 
         if (constraint == null) {
             constraint = "and";
+        }
+
+        if (alias == null) {
+            alias = "";
         }
 
         final List<String> qmarks = new ArrayList<>();
@@ -203,7 +211,7 @@ public class DataBuilder {
 
             String delimiterqmark = inquery ? "( " + StringUtils.collectionToCommaDelimitedString(qmark) + " )" : " ? ";
 
-            qmarks.add(entry.getKey() + " " + (String) oprvaluearr[0]
+            qmarks.add(alias + entry.getKey() + " " + (String) oprvaluearr[0]
                     + delimiterqmark);
         }
         // [">=",3] , ["=", abc] , ["like", %b%]
@@ -268,6 +276,31 @@ public class DataBuilder {
         String orderby = (String) dataobj.get("orderby");
         String order = (String) dataobj.get("order");
 
+        List<Map<String, String>> references = (List<Map<String, String>>) dataobj.get("reference");
+
+        String joinentity = "";
+        String joincolumn = "";
+
+        if (references != null) {
+
+            List<String> joinentities = new ArrayList<>();
+            List<String> joincolumns = new ArrayList<>();
+
+            for (Map<String, String> reference : references) {
+
+                joinentities.add(reference.get("entity") + " r");
+                joincolumns.add(" r." + reference.get("column") + " = e.id ");
+            }
+
+            joinentity += StringUtils.collectionToCommaDelimitedString(joinentities);
+            joincolumn += " where " + StringUtils.collectionToDelimitedString(joincolumns, " and ");
+
+            if (!condition.isEmpty()) {
+                joincolumn += " and ";
+            }
+
+        }
+
         if (offset == null) {
             offset = 0;
         }
@@ -305,11 +338,16 @@ public class DataBuilder {
 
         if (!condition.isEmpty()) {
             String selectquery = "select " + StringUtils.collectionToCommaDelimitedString(columns) + " from " + entity
-                    + " where " + prepareCondition(condition, constraint) + orderbyclause + " limit " + limit
+                    + " e"
+                    + joinentity
+                    + joincolumn + prepareCondition(condition, constraint, "e.") + orderbyclause
+                    + " limit " + limit
                     + " offset " + offset;
             return jdbcTemplate.queryForList(selectquery, argumets.toArray());
         } else {
             String selectquery = "select " + StringUtils.collectionToCommaDelimitedString(columns) + " from " + entity
+                    + " e"
+                    + joinentity + joincolumn
                     + orderbyclause + " limit " + limit
                     + " offset " + offset;
             return jdbcTemplate.queryForList(selectquery);

@@ -249,3 +249,23 @@ CREATE TABLE websitelinks (
     createdon TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (linkname)
 );
+
+DROP TRIGGER IF EXISTS productinserttoreview;
+delimiter //
+CREATE TRIGGER productinserttoreview AFTER INSERT ON product
+       FOR EACH ROW
+       BEGIN
+         insert into reviewsummary values (NEW.id , 0.0, 0, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP) 
+         	ON DUPLICATE KEY
+         	UPDATE id=id;
+       END//
+delimiter ;
+
+DROP TRIGGER IF EXISTS productdeletetoreview;
+delimiter //
+CREATE TRIGGER productdeletetoreview AFTER DELETE ON product
+       FOR EACH ROW
+       BEGIN
+         delete from reviewsummary r where r.productid = OLD.id ;
+       END//
+delimiter ;
