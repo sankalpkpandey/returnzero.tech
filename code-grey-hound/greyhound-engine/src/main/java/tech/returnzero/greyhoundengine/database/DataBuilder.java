@@ -271,6 +271,15 @@ public class DataBuilder {
 
         List<String> columns = (List<String>) dataobj.get("columns");
 
+        if (columns != null && !columns.isEmpty()) {
+            for (int i = 0; i < columns.size(); i++) {
+                if (columns.get(i).equals("id")) {
+                    columns.set(i, "e." + columns.get(i));
+                }
+
+            }
+        }
+
         Integer offset = (Integer) dataobj.get("offset");
         Integer limit = (Integer) dataobj.get("limit");
         String orderby = (String) dataobj.get("orderby");
