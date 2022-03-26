@@ -287,9 +287,9 @@ public class DataBuilder {
             List<String> joincolumns = new ArrayList<>();
 
             for (Map<String, String> reference : references) {
-
-                joinentities.add(reference.get("entity") + " r");
-                joincolumns.add(" r." + reference.get("column") + " = e.id ");
+                String alias = reference.get("alias");
+                joinentities.add(reference.get("entity") + " " + alias);
+                joincolumns.add(" " + alias + "." + reference.get("column") + " = e.id ");
             }
 
             joinentity += StringUtils.collectionToCommaDelimitedString(joinentities);
@@ -340,7 +340,7 @@ public class DataBuilder {
             String selectquery = "select " + StringUtils.collectionToCommaDelimitedString(columns) + " from " + entity
                     + " e"
                     + joinentity
-                    + joincolumn + prepareCondition(condition, constraint, "e.") + orderbyclause
+                    + joincolumn + prepareCondition(condition, constraint) + orderbyclause
                     + " limit " + limit
                     + " offset " + offset;
             return jdbcTemplate.queryForList(selectquery, argumets.toArray());
