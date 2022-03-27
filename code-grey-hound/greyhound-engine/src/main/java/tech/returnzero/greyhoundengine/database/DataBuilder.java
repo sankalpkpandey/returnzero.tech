@@ -301,7 +301,7 @@ public class DataBuilder {
                 joincolumns.add(" " + alias + "." + reference.get("column") + " = e.id ");
             }
 
-            joinentity += StringUtils.collectionToCommaDelimitedString(joinentities);
+            joinentity += "," + StringUtils.collectionToCommaDelimitedString(joinentities);
             joincolumn += " where " + StringUtils.collectionToDelimitedString(joincolumns, " and ");
 
             if (!condition.isEmpty()) {
