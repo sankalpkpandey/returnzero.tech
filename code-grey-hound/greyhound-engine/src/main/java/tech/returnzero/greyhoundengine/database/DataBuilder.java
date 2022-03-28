@@ -269,6 +269,13 @@ public class DataBuilder {
             condition = new HashMap<>();
         }
 
+        String identitypropery = env.getProperty("security.context.id." + entity);
+
+        if (identitypropery != null) {
+            condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
+        }
+
+
         List<String> columns = (List<String>) dataobj.get("columns");
 
         if (columns != null && !columns.isEmpty()) {
