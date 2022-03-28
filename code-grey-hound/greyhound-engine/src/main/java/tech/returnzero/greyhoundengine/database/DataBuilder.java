@@ -386,7 +386,7 @@ public class DataBuilder {
             dataobj.put("limit", 1);
             dataobj.put("offset", 0);
 
-            dataobj.put("columns", Arrays.asList(new String[] { "id", "username", "email", "password" }));
+            dataobj.put("columns", Arrays.asList(new String[] { "id", "username", "email", "password" ,"firstname" , "lastname" }));
 
             List<Map<String, Object>> user = (List<Map<String, Object>>) this.build(dataobj, "get", "user");
             if (user != null && !user.isEmpty()) {
