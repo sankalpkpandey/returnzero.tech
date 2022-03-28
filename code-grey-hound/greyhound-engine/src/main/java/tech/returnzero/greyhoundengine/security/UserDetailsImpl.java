@@ -25,10 +25,12 @@ public class UserDetailsImpl implements UserDetails {
 
     private String firstname;
 
+    private String lastname;
+
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String email, String password,
-            Collection<? extends GrantedAuthority> authorities, String firstname) {
+            Collection<? extends GrantedAuthority> authorities, String firstname, String lastname) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -47,12 +49,16 @@ public class UserDetailsImpl implements UserDetails {
                 (String) user.get("username"),
                 (String) user.get("email"),
                 (String) user.get("password"),
-                authorities, (String) user.get("firstname"));
+                authorities, (String) user.get("firstname"), (String) user.get("lastname"));
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
+    }
+
+    public String getLastname() {
+        return lastname;
     }
 
     public String getFirstname() {

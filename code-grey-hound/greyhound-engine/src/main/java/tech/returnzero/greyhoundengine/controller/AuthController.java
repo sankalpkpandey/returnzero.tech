@@ -81,7 +81,7 @@ public class AuthController {
 				userDetails.getId(),
 				userDetails.getUsername(),
 				userDetails.getEmail(),
-				roles,userDetails.getFirstname()));
+				roles, userDetails.getFirstname(), userDetails.getLastname()));
 	}
 
 	@PostMapping("/resetpassword")
@@ -146,7 +146,7 @@ public class AuthController {
 				if (timelapsed <= 30) {
 					validated = true;
 				}
-				
+
 				if (timelapsed <= 30) {
 					validated = true;
 				}
