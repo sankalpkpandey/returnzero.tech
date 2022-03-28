@@ -61,7 +61,15 @@ public class DataBuilder {
     }
 
     private UserDetailsImpl userdetails() {
-        return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Object userdata = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (UserDetailsImpl.class.equals(userdata.getClass())) {
+            return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } else {
+            return new UserDetailsImpl(-1l, "", "", "", new ArrayList<>(), "", "");
+        }
+
     }
 
     public Integer create(Map<String, Object> dataobj, String entity) {
@@ -275,7 +283,6 @@ public class DataBuilder {
             condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
         }
 
-
         List<String> columns = (List<String>) dataobj.get("columns");
 
         if (columns != null && !columns.isEmpty()) {
@@ -386,7 +393,8 @@ public class DataBuilder {
             dataobj.put("limit", 1);
             dataobj.put("offset", 0);
 
-            dataobj.put("columns", Arrays.asList(new String[] { "id", "username", "email", "password" ,"firstname" , "lastname" }));
+            dataobj.put("columns",
+                    Arrays.asList(new String[] { "id", "username", "email", "password", "firstname", "lastname" }));
 
             List<Map<String, Object>> user = (List<Map<String, Object>>) this.build(dataobj, "get", "user");
             if (user != null && !user.isEmpty()) {
