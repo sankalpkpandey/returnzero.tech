@@ -280,7 +280,10 @@ public class DataBuilder {
         String identitypropery = env.getProperty("security.context.id." + entity);
 
         if (identitypropery != null) {
-            condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
+            long userid = userdetails().getId();
+            if (userid != -1) {
+                condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
+            }
         }
 
         List<String> columns = (List<String>) dataobj.get("columns");
