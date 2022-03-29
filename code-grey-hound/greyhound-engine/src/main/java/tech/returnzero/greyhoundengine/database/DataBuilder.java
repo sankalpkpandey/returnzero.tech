@@ -283,6 +283,8 @@ public class DataBuilder {
             long userid = userdetails().getId();
             if (userid != -1) {
                 condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
+            }else{
+                condition.remove(identitypropery);
             }
         }
 
