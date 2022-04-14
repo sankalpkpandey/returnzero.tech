@@ -1,6 +1,10 @@
 package tech.returnzero.greyhoundengine.controller;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -17,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.log4j.Log4j2;
+import tech.returnzero.greyhoundengine.notification.EmailBuilder;
 import tech.returnzero.greyhoundengine.request.IntegrationRequest;
+import tech.returnzero.greyhoundengine.request.ScheduleRequest;
 import tech.returnzero.greyhoundengine.response.ResponseData;
 import tech.returnzero.greyhoundengine.restclient.RestClient;
 
@@ -32,6 +38,9 @@ public class IntegrationController {
 
     @Autowired
     private ObjectMapper jsonMapper;
+
+    @Autowired
+    private EmailBuilder emailbuilder;
 
     private Map<String, Object> restclientsconfig = null;
 
@@ -75,6 +84,50 @@ public class IntegrationController {
             return ResponseEntity.badRequest().body(response);
         }
 
+    }
+
+    @PostMapping("/schedule")
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<Boolean> schedule(@RequestBody ScheduleRequest schedule) {
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    Map<String, Object> clientconfig = (Map<String, Object>) restclientsconfig
+                            .get(schedule.getIntegrationname());
+                    RestClient client = RestClient.build().accept((String) clientconfig.get("accept"))
+                            .body(schedule.getRequestbody())
+                            .contenttype((String) clientconfig.get("contenttype"))
+                            .headers((Map<String, String>) clientconfig.get("headers"))
+                            .url((String) clientconfig.get("url"))
+                            .timeout((Integer) clientconfig.get("timeout"));
+                    Object response = client.work();
+
+                    if (response != null) {
+                        if (schedule.getEmaildata() == null) {
+                            schedule.setEmaildata(new HashMap<>());
+                        }
+
+                        Map<String, Object> notifyMap = new HashMap<>();
+                        notifyMap.put("template", schedule.getCallbackemailtemplate());
+                        notifyMap.put("data", schedule.getEmaildata());
+                        emailbuilder.build(notifyMap);
+
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    scheduler.shutdownNow();
+                }
+
+            }
+
+        }, 0, schedule.getInterval(), TimeUnit.valueOf(schedule.getUnit()));
+
+        return ResponseEntity.ok(true);
     }
 
 }

@@ -27,7 +27,6 @@ public class UserDetailsImpl implements UserDetails {
 
     private String lastname;
 
-    @JsonIgnore
     private boolean superadmin;
 
     private Collection<? extends GrantedAuthority> authorities;
