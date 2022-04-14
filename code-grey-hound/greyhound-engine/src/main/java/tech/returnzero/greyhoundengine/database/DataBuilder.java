@@ -290,10 +290,11 @@ public class DataBuilder {
             condition = new HashMap<>();
         }
 
+        UserDetailsImpl details = userdetails();
+
         String identitypropery = env.getProperty("security.context.id." + entity);
 
         if (identitypropery != null) {
-            UserDetailsImpl details = userdetails();
 
             long userid = details.getId();
 
@@ -302,6 +303,15 @@ public class DataBuilder {
                         new Object[] { (details.isSuperadmin() ? "!=" : "="), userdetails().getId() });
             } else {
                 condition.remove(identitypropery);
+            }
+        }
+
+        String restrictedcol = env.getProperty("nonsuperadmin.restrict.access.col.name." + entity);
+        String restrictedcolvalue = env.getProperty("nonsuperadmin.restrict.access.col.value." + entity);
+
+        if (restrictedcol != null) {
+            if (!details.isSuperadmin()) {
+                condition.put(restrictedcol, new Object[] { "=", restrictedcolvalue });
             }
         }
 
