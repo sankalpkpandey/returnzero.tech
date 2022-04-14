@@ -67,7 +67,7 @@ public class DataBuilder {
         if (UserDetailsImpl.class.equals(userdata.getClass())) {
             return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         } else {
-            return new UserDetailsImpl(-1l, "", "", "", new ArrayList<>(), "", "");
+            return new UserDetailsImpl(-1l, "", "", "", new ArrayList<>(), "", "", false);
         }
 
     }
@@ -124,6 +124,19 @@ public class DataBuilder {
 
         String identitypropery = env.getProperty("security.context.id." + entity);
         String autogenerateuuid = env.getProperty("autogenerate.uuid." + entity);
+
+        String superadmincol = env.getProperty("superadmin.update.access.col.name" + entity);
+        String superadmincolvalue = env.getProperty("superadmin.update.access.col.value" + entity);
+
+        UserDetailsImpl details = userdetails();
+
+        if (superadmincol != null) {
+            if (!details.isSuperadmin()) {
+                if (superadmincolvalue.equals(dataobj.get(superadmincol))) {
+                    dataobj.put(superadmincol, superadmincolvalue);
+                }
+            }
+        }
 
         if (identitypropery != null) {
             condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
@@ -280,10 +293,14 @@ public class DataBuilder {
         String identitypropery = env.getProperty("security.context.id." + entity);
 
         if (identitypropery != null) {
-            long userid = userdetails().getId();
+            UserDetailsImpl details = userdetails();
+
+            long userid = details.getId();
+
             if (userid != -1) {
-                condition.put(identitypropery, new Object[] { "=", userdetails().getId() });
-            }else{
+                condition.put(identitypropery,
+                        new Object[] { (details.isSuperadmin() ? "!=" : "="), userdetails().getId() });
+            } else {
                 condition.remove(identitypropery);
             }
         }

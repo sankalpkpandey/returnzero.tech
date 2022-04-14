@@ -27,16 +27,20 @@ public class UserDetailsImpl implements UserDetails {
 
     private String lastname;
 
+    @JsonIgnore
+    private boolean superadmin;
+
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String email, String password,
-            Collection<? extends GrantedAuthority> authorities, String firstname, String lastname) {
+            Collection<? extends GrantedAuthority> authorities, String firstname, String lastname, boolean superadmin) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
         this.firstname = firstname;
+        this.superadmin = superadmin;
     }
 
     public static UserDetailsImpl build(Map<String, Object> user) {
@@ -49,7 +53,12 @@ public class UserDetailsImpl implements UserDetails {
                 (String) user.get("username"),
                 (String) user.get("email"),
                 (String) user.get("password"),
-                authorities, (String) user.get("firstname"), (String) user.get("lastname"));
+                authorities, (String) user.get("firstname"), (String) user.get("lastname"),
+                (boolean) user.get("superadmin"));
+    }
+
+    public boolean isSuperadmin() {
+        return superadmin;
     }
 
     @Override

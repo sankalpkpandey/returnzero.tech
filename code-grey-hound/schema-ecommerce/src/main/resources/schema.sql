@@ -269,6 +269,10 @@ delimiter //
 CREATE TRIGGER productdeletetoreview AFTER DELETE ON product
        FOR EACH ROW
        BEGIN
-         delete from reviewsummary r where r.productid = OLD.id ;
+         delete from reviewsummary r where r.productid = OLD.id;
        END//
 delimiter ;
+
+
+ALTER TABLE user ADD superadmin boolean DEFAULT false;
+ALTER TABLE reviews ADD status  varchar(255) DEFAULT 'draft';
